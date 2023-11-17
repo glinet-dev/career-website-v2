@@ -2,4 +2,4 @@
 A career website:poweredby-jovian
 
 
-click here: https://zen-career-page.onrender.com/
+click here: https://zenn-careers-v2.onrender.com/
