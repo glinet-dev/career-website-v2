@@ -1,10 +1,13 @@
 from flask import Flask ,render_template,jsonify #inside module import Class named Flask
+from flask_pymongo import PyMongo
 
 #to use template insid ethe app.py we make useof render_template
 
 app = Flask(__name__) # createing object of the class / putting the class object into variable app
  # __name__ referes to how this particular script was invoked. Since __name__ is invoked at app.py it refers to __manin__
- 
+app.config['MONGO_URI'] = 'mongodb://admin:password@my_mongodb_container:27017/my_database'
+mongo = PyMongo(app)
+
  # any website you access is via url hence we need to create a route
  # now we need to tell the flask when certain url is requested what we should return
  
@@ -51,3 +54,7 @@ def home():
 @app.route('/api/jobs')
 def list_jobs():
     return jsonify(JOBS)
+
+@app.route('/apply')
+def apply():
+    return render_template('form.html')
