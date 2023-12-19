@@ -1,12 +1,17 @@
-from flask import Flask ,render_template,jsonify #inside module import Class named Flask
+from flask import Flask ,render_template,jsonify, redirect, url_for #inside module import Class named Flask
+from flask_wtf import FlaskForm
 from flask_pymongo import PyMongo
+from forms import ApplicationForm  # Import the form you created
 
 #to use template insid ethe app.py we make useof render_template
 
 app = Flask(__name__) # createing object of the class / putting the class object into variable app
  # __name__ referes to how this particular script was invoked. Since __name__ is invoked at app.py it refers to __manin__
+app.config['SECRET_KEY'] = 'password'  # Change this to a secure secret key
 app.config['MONGO_URI'] = 'mongodb://admin:password@my_mongodb_container:27017/my_database'
 mongo = PyMongo(app)
+print(mongo)
+db = mongo.db
 
  # any website you access is via url hence we need to create a route
  # now we need to tell the flask when certain url is requested what we should return
@@ -55,6 +60,25 @@ def home():
 def list_jobs():
     return jsonify(JOBS)
 
-@app.route('/apply')
+@app.route('/apply', methods=['GET', 'POST'])
 def apply():
-    return render_template('form.html')
+    form = ApplicationForm()
+
+    if form.validate_on_submit():
+        # Retrieve data from the form
+        first_name = form.fname.data
+        last_name = form.lname.data
+
+        # Log the data to the console
+        print(f"Submitted Data - First Name: {first_name}, Last Name: {last_name}")
+
+        # Save data to MongoDB
+        db.applications.insert_one({
+            'first_name': first_name,
+            'last_name': last_name
+        })
+
+        return redirect(url_for('home'))  # Redirect to the home page after form submission
+
+    return render_template('form.html', form=form)
+
